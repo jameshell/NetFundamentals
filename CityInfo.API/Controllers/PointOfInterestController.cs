@@ -7,15 +7,37 @@ namespace CityInfo.API.Controllers;
 [ApiController, Route("api/cities/{cityId}/pointsofinterest")]
 public class PointOfInterestController : ControllerBase
 {
+    private readonly ILogger<PointOfInterestController> _logger;
+
+    public PointOfInterestController(ILogger<PointOfInterestController> logger)
+    {
+        _logger = logger ?? throw new ArgumentException(nameof(logger));
+    }
+
     [HttpGet]
     public ActionResult<IEnumerable<PointOfInterestDto>> GetPointsOfInterest(int cityId)
     {
-        var city = CitiesDataStore
-            .Current
-            .Cities
-            .FirstOrDefault(city => city.Id == cityId);
-        if (city == null) return NotFound();
-        return Ok(city);
+        try
+        {
+            var city = CitiesDataStore
+                .Current
+                .Cities
+                .FirstOrDefault(city => city.Id == cityId);
+            
+            if (city == null)
+            {
+                _logger.LogInformation($"Information: City {cityId} was not found.");
+                return NotFound();
+            }
+
+            return Ok(city);
+        }
+        catch (Exception e)
+        {
+            _logger.LogCritical(
+                $"Exception while getting points of interest for city with id {cityId}", e);
+            return StatusCode(500, "A problem while handling your request.");
+        }
     }
 
     [HttpGet("{pointOfInterestId}", Name = "GetPointOfInterest")]
@@ -117,7 +139,7 @@ public class PointOfInterestController : ControllerBase
     {
         var city = CitiesDataStore.Current.Cities.FirstOrDefault(city => city.Id == cityId);
         if (city == null) return NotFound($"No cities were found");
-        
+
         var pointOfInterestFromStore = city.PointsOfInterest
             .FirstOrDefault(point => point.Id == pointOfInterestId);
         if (pointOfInterestFromStore == null) return NotFound($"No points of interest were found in the city.");
