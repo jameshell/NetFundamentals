@@ -8,6 +8,9 @@
 # For SQLite DB
 CityInfo.db
 
+# Ignore Environment Variables
+.env
+
 ## For logging files/folder
 log
 

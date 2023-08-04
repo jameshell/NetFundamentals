@@ -4,6 +4,10 @@ using CityInfo.API.Services;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using DotNetEnv;
+
+// Loading environment variables
+Env.Load();
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
@@ -34,7 +38,9 @@ builder.Services.AddTransient<IMailService, CloudMailService>();
 
 builder.Services.AddSingleton<CitiesDataStore>();
 builder.Services.AddDbContext<CityInfoContext>(
-    dbContextOptions => dbContextOptions.UseSqlite("Data Source=CityInfo.db"));
+    dbContextOptions => dbContextOptions.UseSqlite(
+        builder.Configuration["ConnectionStrings:CityInfoDBConnectionString"]
+        ));
 
 var app = builder.Build();
 
