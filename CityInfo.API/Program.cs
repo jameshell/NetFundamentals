@@ -37,9 +37,16 @@ builder.Services.AddTransient<IMailService, CloudMailService>();
 #endif
 
 builder.Services.AddSingleton<CitiesDataStore>();
+
+// This is to obtain config file from App Settings.json environments.
+// builder.Services.AddDbContext<CityInfoContext>(
+//     dbContextOptions => dbContextOptions.UseSqlite(
+//         builder.Configuration["ConnectionStrings:CityInfoDBConnectionString"]
+//         ));
+
 builder.Services.AddDbContext<CityInfoContext>(
     dbContextOptions => dbContextOptions.UseSqlite(
-        builder.Configuration["ConnectionStrings:CityInfoDBConnectionString"]
+        Environment.GetEnvironmentVariable("CONNECTION_STRING")
         ));
 
 var app = builder.Build();
