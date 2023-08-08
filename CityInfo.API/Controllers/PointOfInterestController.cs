@@ -2,12 +2,15 @@
 using CityInfo.API.Entities;
 using CityInfo.API.Models;
 using CityInfo.API.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CityInfo.API.Controllers;
-
-[ApiController, Route("api/cities/{cityId}/pointsofinterest")]
+[Authorize]
+[ApiVersion("2.0")]
+[ApiVersion("1.0")]
+[ApiController, Route("api/v{version:apiVersion}/cities/{cityId}/pointsofinterest")]
 public class PointOfInterestController : ControllerBase
 {
     private readonly ILogger<PointOfInterestController> _logger;
